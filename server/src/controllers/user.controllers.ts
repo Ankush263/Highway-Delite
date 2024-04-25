@@ -60,18 +60,6 @@ export const login = catchAsync(
 	}
 );
 
-export const createAndSendOTP = (user: UserInterface, res: Response) => {
-	const otp = otpGenerator.generate(4, {
-		upperCaseAlphabets: false,
-		specialChars: false,
-		lowerCaseAlphabets: false,
-	});
-
-	Otp.create({ user: user._id, otp });
-
-	res.json(otp);
-};
-
 export const signup = catchAsync(
 	async (req: Request, res: Response, next: NextFunction) => {
 		const {
@@ -105,9 +93,21 @@ export const signup = catchAsync(
 			password: hashedPassword,
 		});
 
-		createAndSendOTP(newUser, res);
+		createAndSendToken(newUser, 202, res);
+	}
+);
 
-		// createAndSendToken(newUser, 201, res);
+export const getOTP = catchAsync(
+	async (req: Request | any, res: Response, next: NextFunction) => {
+		const otp = otpGenerator.generate(4, {
+			upperCaseAlphabets: false,
+			specialChars: false,
+			lowerCaseAlphabets: false,
+		});
+
+		Otp.create({ user: req.user.id, otp });
+
+		res.json({ otp });
 	}
 );
 
@@ -122,6 +122,15 @@ export const matchOTP = catchAsync(
 		} else {
 			return next(new AppError('Wrong OTP!!!', 401));
 		}
+
+		user.active = true;
+
+		await user.save();
+
+		res.status(200).json({
+			status: 'success',
+			data: user,
+		});
 	}
 );
 
