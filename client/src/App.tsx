@@ -1,9 +1,21 @@
-import SignUp from './pages/SignUp';
+import { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 function App() {
+	const history = useHistory();
+
+	useEffect(() => {
+		const token = Cookies.get('Token');
+
+		if (!token) {
+			history.push('/signup');
+		}
+	}, [history]);
+
 	return (
 		<>
-			<SignUp />
+			<h1>Hello Ankush</h1>
 		</>
 	);
 }

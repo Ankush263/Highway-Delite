@@ -1,0 +1,26 @@
+.signup-container {
+	display: flex;
+}
+
+.left-container,
+.right-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 50%;
+	min-height: 100vh;
+}
+
+@media (max-width: 1049px) {
+	.signup-container {
+		flex-direction: column;
+	}
+	.left-container,
+	.right-container {
+		width: 100%;
+	}
+
+	.right-container {
+		margin-bottom: 30px;
+	}
+}

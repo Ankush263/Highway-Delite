@@ -1,4 +1,5 @@
 import {
+	Alert,
 	Box,
 	Button,
 	Flex,
@@ -6,52 +7,33 @@ import {
 	Input,
 	PasswordInput,
 	Text,
-	Alert,
 } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { signup } from '../api';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { useHistory } from 'react-router-dom';
+import { login } from '../api';
 
-interface SignupFormDetails {
-	firstName: string;
-	lastName: string;
+interface LoginFormDetails {
 	email: string;
 	password: string;
 }
 
-function SignUp() {
-	const [formDetails, setFormDetails] = useState<SignupFormDetails>({
-		firstName: '',
-		lastName: '',
+function Login() {
+	const [formDetails, setFormDetails] = useState<LoginFormDetails>({
 		email: '',
 		password: '',
 	});
 	const [showAlert, setShowAlert] = useState(false);
 	const [alertMsg, setAlertMsg] = useState('');
-	const [passwordConfirm, setPasswordConfirm] = useState('');
 	const history = useHistory();
 
 	const handleSignup = async () => {
-		const { firstName, lastName, email, password } = formDetails;
-		if (
-			firstName.length === 0 ||
-			lastName.length === 0 ||
-			email.length === 0 ||
-			password.length === 0
-		) {
-			setShowAlert(true);
-			setAlertMsg('Plese fill the whole signup form');
+		const { email, password } = formDetails;
 
-			setTimeout(() => {
-				setShowAlert(false);
-			}, 7000);
-			return;
-		}
-
-		if (password !== passwordConfirm) {
+		if (email.length === 0 || password.length === 0) {
 			setShowAlert(true);
-			setAlertMsg('Please check your passwords');
+			setAlertMsg('Plese fill the whole login form');
 
 			setTimeout(() => {
 				setShowAlert(false);
@@ -60,12 +42,11 @@ function SignUp() {
 		}
 
 		try {
-			const data = await signup({ firstName, lastName, email, password });
+			const data = await login({ email, password });
 			const token = data.data.token;
 
 			Cookies.set('Token', token, { expires: 7, secure: true });
 			history.push('/');
-
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (error: any) {
 			setShowAlert(true);
@@ -88,13 +69,12 @@ function SignUp() {
 	return (
 		<Box className="signup-container">
 			<Box className="left-container">
-				<Image src="/img2.png" width={'100%'} height={'100%'} />
+				<Image src="/img1.png" width={'100%'} height={'100%'} />
 			</Box>
 			<Box className="right-container">
 				<Box
 					style={{
 						width: '70%',
-						height: '100%',
 					}}
 				>
 					<Flex
@@ -105,68 +85,22 @@ function SignUp() {
 							borderRadius: '10px',
 							boxShadow: '1px 1px 2px 2px #baadad',
 						}}
-						gap={'50px'}
+						gap={'30px'}
 						mt={'25px'}
 						p={'50px'}
 					>
-						<Flex style={{ width: '100%' }} justify={'space-between'}>
+						<Flex style={{ width: '100%' }}>
 							<Text size="30px" fw={'bold'} c={'#3A244A'}>
-								Let Us Know{' '}
+								Fill what we know{' '}
 								<Text c={'#D72638'} span size="30px" fw={'bold'}>
 									!
 								</Text>
 							</Text>
-							<Text size="20px" fw={'bold'} c={'#3A244A'} td="underline">
-								<Link to={'/login'} style={{ textDecoration: 'none' }}>
-									Sign In
-								</Link>
-							</Text>
 						</Flex>
+
 						<Flex style={{ width: '100%' }} justify={'space-between'}>
 							<Input
-								placeholder="First Name"
-								style={{ width: '100%', borderBottom: '1px solid #baadad' }}
-								variant="unstyled"
-								value={formDetails?.firstName}
-								onChange={(e) =>
-									setFormDetails({ ...formDetails, firstName: e.target.value })
-								}
-							/>
-						</Flex>
-						<Flex style={{ width: '100%' }} justify={'space-between'}>
-							<Input
-								placeholder="Last Name"
-								style={{ width: '100%', borderBottom: '1px solid #baadad' }}
-								variant="unstyled"
-								value={formDetails?.lastName}
-								onChange={(e) =>
-									setFormDetails({ ...formDetails, lastName: e.target.value })
-								}
-							/>
-						</Flex>
-						<Flex style={{ width: '100%' }} justify={'space-between'}>
-							<PasswordInput
-								placeholder="Set Password"
-								style={{ width: '100%', borderBottom: '1px solid #baadad' }}
-								variant="unstyled"
-								value={formDetails?.password}
-								onChange={(e) =>
-									setFormDetails({ ...formDetails, password: e.target.value })
-								}
-							/>
-						</Flex>
-						<Flex style={{ width: '100%' }} justify={'space-between'}>
-							<PasswordInput
-								placeholder="Retype Password"
-								style={{ width: '100%', borderBottom: '1px solid #baadad' }}
-								variant="unstyled"
-								value={passwordConfirm}
-								onChange={(e) => setPasswordConfirm(e.target.value)}
-							/>
-						</Flex>
-						<Flex style={{ width: '100%' }} justify={'space-between'}>
-							<Input
-								placeholder="Enter Email"
+								placeholder="Email"
 								style={{ width: '100%', borderBottom: '1px solid #baadad' }}
 								variant="unstyled"
 								value={formDetails?.email}
@@ -175,15 +109,37 @@ function SignUp() {
 								}
 							/>
 						</Flex>
+						<Flex style={{ width: '100%' }} justify={'space-between'}>
+							<PasswordInput
+								placeholder="Password"
+								style={{ width: '100%', borderBottom: '1px solid #baadad' }}
+								variant="unstyled"
+								value={formDetails?.password}
+								onChange={(e) =>
+									setFormDetails({ ...formDetails, password: e.target.value })
+								}
+							/>
+						</Flex>
 
 						<Button
 							type="submit"
 							w={'70%'}
-							radius="lg"
+							radius="12px"
 							bg={'#3A244A'}
 							onClick={handleSignup}
 						>
-							Sign Up
+							Sign In
+						</Button>
+						<Button
+							type="submit"
+							variant="outline"
+							w={'70%'}
+							radius="12px"
+							color={'#3A244A'}
+						>
+							<Link to={'/signup'} style={{ textDecoration: 'none' }}>
+								Sign Up
+							</Link>
 						</Button>
 						{showAlert ? (
 							<Alert variant="filled" color="red" title="Signup Error">
@@ -199,4 +155,4 @@ function SignUp() {
 	);
 }
 
-export default SignUp;
+export default Login;
