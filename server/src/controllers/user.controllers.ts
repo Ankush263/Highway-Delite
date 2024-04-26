@@ -41,10 +41,6 @@ const createAndSendToken = (
 
 	res.cookie('jwt', token, cookieOptions);
 
-	// const resetToken = user.createPasswordResetToken(token);
-
-	// user.passwordResetToken = resetToken;
-
 	res.json({ token });
 };
 
