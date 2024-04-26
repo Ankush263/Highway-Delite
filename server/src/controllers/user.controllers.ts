@@ -8,6 +8,7 @@ import bcrypt from 'bcryptjs';
 import { UserInterface } from '../models/user.model';
 import { Otp } from '../models/otp.model';
 import otpGenerator from 'otp-generator';
+import Email from '../utils/email';
 dotenv.config();
 
 const signToken = (id: string) => {
@@ -105,9 +106,13 @@ export const getOTP = catchAsync(
 			lowerCaseAlphabets: false,
 		});
 
-		Otp.create({ user: req.user.id, otp });
+		const user = await User.findById(req.user.id);
 
-		res.json({ otp });
+		Otp.create({ user: user._id, otp });
+
+		await new Email(user, otp).sendOTPEmail(otp);
+
+		res.send('send');
 	}
 );
 

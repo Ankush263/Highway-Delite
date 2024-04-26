@@ -9,6 +9,7 @@ import { globalErrorHandler } from './middleware/global-error';
 const app: Express = express();
 
 app.use(cors());
+app.set('view engine', 'ejs');
 app.use(cookieParser());
 app.use(bodyParser.json());
 
