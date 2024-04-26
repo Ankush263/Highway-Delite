@@ -7,11 +7,14 @@ import {
 	PasswordInput,
 	Text,
 	Alert,
+	Modal,
+	Loader,
 } from '@mantine/core';
 import { useEffect, useState } from 'react';
-import { signup } from '../api';
+import { signup, generateOTP, matchOTP } from '../api';
 import { Link, useHistory } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import { useDisclosure } from '@mantine/hooks';
 
 interface SignupFormDetails {
 	firstName: string;
@@ -30,9 +33,14 @@ function SignUp() {
 	const [showAlert, setShowAlert] = useState(false);
 	const [alertMsg, setAlertMsg] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
+	const [token, setToken] = useState('');
+	const [signupSuccess, setSignupSuccess] = useState(false);
+	const [otp, setOtp] = useState('');
+	const [opened, { open, close }] = useDisclosure(false);
 	const history = useHistory();
 
 	const handleSignup = async () => {
+		setSignupSuccess(true);
 		const { firstName, lastName, email, password } = formDetails;
 		if (
 			firstName.length === 0 ||
@@ -61,8 +69,32 @@ function SignUp() {
 
 		try {
 			const data = await signup({ firstName, lastName, email, password });
-			const token = data.data.token;
+			const myToken = data.data.token;
+			setToken(myToken);
+			await generateOTP(myToken);
+			open();
+			setSignupSuccess(false);
 
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		} catch (error: any) {
+			setSignupSuccess(false);
+			setShowAlert(true);
+			setAlertMsg(error?.response.data.message);
+
+			setTimeout(() => {
+				setShowAlert(false);
+			}, 7000);
+			return;
+		}
+	};
+
+	const handleOTP = async () => {
+		if (otp.length === 0) {
+			return;
+		}
+
+		try {
+			await matchOTP(token, otp);
 			Cookies.set('Token', token, { expires: 7, secure: true });
 			history.push('/');
 
@@ -90,6 +122,16 @@ function SignUp() {
 			<Box className="left-container">
 				<Image src="/img2.png" width={'100%'} height={'100%'} />
 			</Box>
+
+			<Modal opened={opened} onClose={close} title="Varify OTP">
+				<Input
+					placeholder="Enter OTP"
+					mb={20}
+					value={otp}
+					onChange={(e) => setOtp(e.target.value)}
+				/>
+				<Button onClick={handleOTP}>Submit</Button>
+			</Modal>
 			<Box className="right-container">
 				<Box
 					style={{
@@ -183,7 +225,7 @@ function SignUp() {
 							bg={'#3A244A'}
 							onClick={handleSignup}
 						>
-							Sign Up
+							{signupSuccess ? <Loader color="blue" type="dots" /> : 'Sign Up'}
 						</Button>
 						{showAlert ? (
 							<Alert variant="filled" color="red" title="Signup Error">
