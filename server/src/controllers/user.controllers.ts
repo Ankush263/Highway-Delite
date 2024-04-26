@@ -9,6 +9,7 @@ import { UserInterface } from '../models/user.model';
 import { Otp } from '../models/otp.model';
 import otpGenerator from 'otp-generator';
 import Email from '../utils/email';
+import crypto from 'crypto';
 dotenv.config();
 
 const signToken = (id: string) => {
@@ -39,6 +40,10 @@ const createAndSendToken = (
 	if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
 	res.cookie('jwt', token, cookieOptions);
+
+	// const resetToken = user.createPasswordResetToken(token);
+
+	// user.passwordResetToken = resetToken;
 
 	res.json({ token });
 };
@@ -175,6 +180,23 @@ export const protect = catchAsync(
 		req.user = freshUser;
 
 		next();
+	}
+);
+
+export const resetPassword = catchAsync(
+	async (req: Request | any, res: Response, next: NextFunction) => {
+		const user = await User.findById(req.user.id);
+
+		if (
+			!(await user.correctPassword(req.body.currentPassword, user.password))
+		) {
+			return next(new AppError(`Your current password is wrong`, 401));
+		}
+
+		user.password = await bcrypt.hash(req.body.password, 12);
+		await user.save();
+
+		createAndSendToken(user, 200, res);
 	}
 );
 

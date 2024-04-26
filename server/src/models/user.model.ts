@@ -1,5 +1,7 @@
 import mongoose, { Model } from 'mongoose';
 import validator from 'validator';
+import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 
 export interface UserInterface {
 	_id?: string;
@@ -8,6 +10,7 @@ export interface UserInterface {
 	email: string;
 	password: string;
 	active: boolean;
+	correctPassword: () => boolean;
 }
 
 const userSchema = new mongoose.Schema<UserInterface>(
@@ -38,5 +41,12 @@ const userSchema = new mongoose.Schema<UserInterface>(
 		timestamps: true,
 	}
 );
+
+userSchema.methods.correctPassword = async function (
+	candidatePassword: string,
+	userPassword: string
+) {
+	return await bcrypt.compare(candidatePassword, userPassword);
+};
 
 export const User: Model<any> = mongoose.model('User', userSchema);
