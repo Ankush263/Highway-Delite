@@ -50,6 +50,7 @@ function SignUp() {
 			password.length === 0
 		) {
 			setShowAlert(true);
+			setSignupSuccess(false);
 			setAlertMsg('Plese fill the whole signup form');
 
 			setTimeout(() => {
@@ -60,6 +61,7 @@ function SignUp() {
 
 		if (password !== passwordConfirm) {
 			setShowAlert(true);
+			setSignupSuccess(false);
 			setAlertMsg('Please check your passwords');
 
 			setTimeout(() => {

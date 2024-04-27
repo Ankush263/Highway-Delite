@@ -9,7 +9,6 @@ import { UserInterface } from '../models/user.model';
 import { Otp } from '../models/otp.model';
 import otpGenerator from 'otp-generator';
 import Email from '../utils/email';
-import crypto from 'crypto';
 dotenv.config();
 
 const signToken = (id: string) => {
@@ -111,7 +110,7 @@ export const getOTP = catchAsync(
 
 		Otp.create({ user: user._id, otp });
 
-		await new Email(user, otp).sendOTPEmail(otp);
+		await new Email(user, otp).sendOTPEmail();
 
 		res.send('send');
 	}

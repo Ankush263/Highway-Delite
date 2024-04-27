@@ -37,18 +37,17 @@ export default class Email {
 		} as TransportOptions);
 	}
 
-	async send(template: string, otp: string, subject: string) {
+	async send(template: string, subject: string) {
 		const html = await ejs.renderFile(`${__dirname}/../views/${template}.ejs`, {
 			firstName: this.firstName,
-			otp,
+			otp: this.otp,
 			subject,
 		});
 
 		const mailOptions = {
 			from: this.from,
-			to: this.to,
+			to: JSON.stringify(this.to),
 			subject,
-			otp,
 			html,
 			text: convert(html),
 		};
@@ -56,7 +55,7 @@ export default class Email {
 		await this.newTransport().sendMail(mailOptions);
 	}
 
-	async sendOTPEmail(otp: string) {
-		await this.send('OTPEmail', otp, 'Email Varification');
+	async sendOTPEmail() {
+		await this.send('OTPEmail', 'Email Varification');
 	}
 }
