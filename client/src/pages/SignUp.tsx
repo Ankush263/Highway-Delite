@@ -31,6 +31,7 @@ function SignUp() {
 		password: '',
 	});
 	const [showAlert, setShowAlert] = useState(false);
+	const [showAlert2, setShowAlert2] = useState(false);
 	const [alertMsg, setAlertMsg] = useState('');
 	const [passwordConfirm, setPasswordConfirm] = useState('');
 	const [token, setToken] = useState('');
@@ -100,11 +101,11 @@ function SignUp() {
 
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		} catch (error: any) {
-			setShowAlert(true);
+			setShowAlert2(true);
 			setAlertMsg(error?.response.data.message);
 
 			setTimeout(() => {
-				setShowAlert(false);
+				setShowAlert2(false);
 			}, 7000);
 			return;
 		}
@@ -124,6 +125,9 @@ function SignUp() {
 			</Box>
 
 			<Modal opened={opened} onClose={close} title="Varify OTP">
+				<Text mb={10} fw={500} fz={15}>
+					Your OTP is usable for 2 mins
+				</Text>
 				<Input
 					placeholder="Enter OTP"
 					mb={20}
@@ -131,6 +135,13 @@ function SignUp() {
 					onChange={(e) => setOtp(e.target.value)}
 				/>
 				<Button onClick={handleOTP}>Submit</Button>
+				{showAlert2 ? (
+					<Alert variant="filled" color="red" title="Signup Error">
+						{alertMsg}
+					</Alert>
+				) : (
+					''
+				)}
 			</Modal>
 			<Box className="right-container">
 				<Box

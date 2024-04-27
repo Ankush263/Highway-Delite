@@ -35,13 +35,8 @@ export const getUser = (_token: string | null) =>
 
 export const resetPassword = (
 	_token: string,
-	currentPassword: string,
-	password: string
+	details: { currentPassword: string; password: string }
 ) =>
-	USER_API.patch(
-		'/resetPassword',
-		{ currentPassword, password },
-		{
-			headers: { Authorization: `Bearer ${_token}` },
-		}
-	);
+	USER_API.patch('/resetPassword', details, {
+		headers: { Authorization: `Bearer ${_token}` },
+	});

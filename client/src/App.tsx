@@ -42,11 +42,11 @@ function App() {
 	const handleReset = async () => {
 		try {
 			const token = Cookies.get('Token');
-			await resetPassword(
-				token as string,
-				passwordDetails.oldPassword,
-				passwordDetails.newPassword
-			);
+			await resetPassword(token as string, {
+				currentPassword: passwordDetails.oldPassword,
+				password: passwordDetails.newPassword,
+			});
+			history.go(0);
 		} catch (error) {
 			console.log(error);
 		}
@@ -100,7 +100,18 @@ function App() {
 				<Text fz={'md'} mb={20}>
 					{userDetails.email}
 				</Text>
-				<Button onClick={open}>Reset Password</Button>
+				<Button onClick={open} mb={15}>
+					Reset Password
+				</Button>
+				<Button
+					onClick={() => {
+						Cookies.remove('Token');
+						history.go(0);
+					}}
+					variant="outline"
+				>
+					Logout
+				</Button>
 			</Card>
 		</Flex>
 	);
