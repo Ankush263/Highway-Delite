@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const URL = `http://localhost:8000`;
+// const URL = `http://localhost:8000`;
+const URL = `https://highway-delite-pdfa.onrender.com`;
 
 const USER_URL = `${URL}/api/v1/user`;
 
